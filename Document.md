@@ -1,6 +1,6 @@
 # Panduan Instalasi dan Deployment VPS
 
-Dokumen ini menjelaskan deployment aplikasi ini ke VPS Ubuntu dengan Nginx, PHP-FPM, dan MySQL. Konfigurasi proyek berdasarkan `composer.json`: Laravel 12, Filament 5, PHP 8.2 atau lebih baru, dan Vite 7.
+Dokumen ini menjelaskan deployment aplikasi ini ke VPS Ubuntu dengan Apache2, PHP-FPM, dan MariaDB. Konfigurasi proyek berdasarkan `composer.json`: Laravel 12, Filament 5, PHP 8.2 atau lebih baru, dan Vite 7.
 
 > Contoh perintah mengasumsikan Ubuntu 24.04, domain `contoh.com`, direktori `/var/www/smst-laravel`, PHP 8.3, dan pengguna database `smst_user`. Sesuaikan nilai-nilai tersebut dengan VPS Anda. Gunakan Node.js 20.19+ atau 22.12+ untuk membangun aset Vite.
 
@@ -13,13 +13,15 @@ sudo apt update
 sudo apt upgrade -y
 ```
 
-Pasang Nginx, MySQL, Git, Composer, PHP-FPM, dan ekstensi PHP yang dibutuhkan Laravel serta koneksi MySQL:
+Pasang Apache2, MariaDB, Git, Composer, PHP-FPM, dan ekstensi PHP yang dibutuhkan Laravel serta koneksi MariaDB:
 
 ```bash
-sudo apt install -y nginx mysql-server git unzip curl composer \
+sudo apt install -y apache2 git unzip curl composer \
   php8.3-cli php8.3-fpm php8.3-common php8.3-mysql php8.3-mbstring \
   php8.3-xml php8.3-curl php8.3-zip php8.3-bcmath php8.3-intl php8.3-gd
 ```
+
+Ubuntu 24.04 menyediakan PHP 8.3 dari repositori bawaan.
 
 Pastikan versi PHP dan Composer memenuhi kebutuhan:
 
@@ -37,21 +39,21 @@ node -v
 npm -v
 ```
 
-## 2. Siapkan database MySQL
+## 2. Siapkan database MariaDB
 
-Amankan instalasi MySQL sesuai kebutuhan server:
+Amankan instalasi MariaDB sesuai kebutuhan server:
 
 ```bash
-sudo mysql_secure_installation
+sudo mariadb-secure-installation
 ```
 
 Buat database dan pengguna khusus aplikasi. Ganti password contoh dengan password kuat dan unik:
 
 ```bash
-sudo mysql
+sudo mariadb
 ```
 
-Jalankan SQL berikut di prompt MySQL:
+Jalankan SQL berikut di prompt MariaDB:
 
 ```sql
 CREATE DATABASE smst_laravel CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -154,69 +156,55 @@ Aktifkan cache konfigurasi dan optimasi Laravel setelah `.env` selesai:
 php artisan optimize
 ```
 
-## 6. Konfigurasi Nginx
+## 6. Konfigurasi Apache2
 
 Buat konfigurasi situs:
 
 ```bash
-sudo nano /etc/nginx/sites-available/smst-laravel
+sudo nano /etc/apache2/sites-available/smst-laravel.conf
 ```
 
 Isi dengan konfigurasi berikut. Ganti `contoh.com` dan sesuaikan socket PHP-FPM jika versi PHP di VPS berbeda:
 
-```nginx
-server {
-    listen 80;
-    listen [::]:80;
-    server_name contoh.com www.contoh.com;
-    root /var/www/smst-laravel/public;
+```apache
+<VirtualHost *:80>
+    ServerName contoh.com
+    ServerAlias www.contoh.com
+    DocumentRoot /var/www/smst-laravel/public
 
-    add_header X-Content-Type-Options nosniff;
-    index index.php;
-    charset utf-8;
+    <Directory /var/www/smst-laravel/public>
+        AllowOverride All
+        Require all granted
+    </Directory>
 
-    location / {
-        try_files $uri $uri/ /index.php?$query_string;
-    }
-
-    location = /favicon.ico { access_log off; log_not_found off; }
-    location = /robots.txt  { access_log off; log_not_found off; }
-
-    error_page 404 /index.php;
-
-    location ~ \.php$ {
-        fastcgi_pass unix:/run/php/php8.3-fpm.sock;
-        fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
-        include fastcgi_params;
-    }
-
-    location ~ /\.(?!well-known).* {
-        deny all;
-    }
-}
+    ErrorLog ${APACHE_LOG_DIR}/smst-laravel-error.log
+    CustomLog ${APACHE_LOG_DIR}/smst-laravel-access.log combined
+</VirtualHost>
 ```
 
-Aktifkan situs dan periksa konfigurasi sebelum memuat ulang Nginx:
+Aktifkan modul rewrite dan integrasi PHP-FPM, lalu aktifkan situs. Periksa konfigurasi sebelum memuat ulang Apache2:
 
 ```bash
-sudo ln -s /etc/nginx/sites-available/smst-laravel /etc/nginx/sites-enabled/smst-laravel
-sudo nginx -t
-sudo systemctl reload nginx
+sudo a2enmod rewrite proxy_fcgi setenvif
+sudo a2enconf php8.3-fpm
+sudo a2ensite smst-laravel.conf
+sudo apache2ctl configtest
+sudo systemctl reload apache2
 ```
 
-Jika konfigurasi default Nginx masih aktif dan mengambil alih domain, nonaktifkan symlink default setelah memastikan situs lain tidak memerlukannya:
+Jika situs default Apache masih aktif dan mengambil alih domain, nonaktifkan setelah memastikan situs lain tidak memerlukannya:
 
 ```bash
-sudo rm /etc/nginx/sites-enabled/default
-sudo nginx -t
-sudo systemctl reload nginx
+sudo a2dissite 000-default.conf
+sudo apache2ctl configtest
+sudo systemctl reload apache2
 ```
 
 Pastikan DNS domain mengarah ke IP VPS. Setelah domain dapat diakses melalui HTTP, aktifkan HTTPS dengan Certbot:
 
 ```bash
-sudo apt install -y certbot python3-certbot-nginx
-sudo certbot --nginx -d contoh.com -d www.contoh.com
+sudo apt install -y certbot python3-certbot-apache
+sudo certbot --apache -d contoh.com -d www.contoh.com
 ```
 
 ## 7. Jalankan queue worker
@@ -232,7 +220,7 @@ Isi file:
 ```ini
 [Unit]
 Description=SMST Laravel Queue Worker
-After=network.target mysql.service
+After=network.target mariadb.service
 
 [Service]
 User=www-data
@@ -261,7 +249,7 @@ Jika proyek tidak memakai job/queue, service ini tidak diperlukan. Untuk konfigu
 Pastikan servis aktif dan periksa URL health check Laravel:
 
 ```bash
-sudo systemctl status nginx php8.3-fpm mysql
+sudo systemctl status apache2 php8.3-fpm mariadb
 curl -I https://contoh.com/up
 ```
 
@@ -271,7 +259,7 @@ Jika aplikasi menampilkan error, periksa log:
 
 ```bash
 sudo tail -n 100 /var/www/smst-laravel/storage/logs/laravel.log
-sudo journalctl -u nginx -n 100 --no-pager
+sudo journalctl -u apache2 -n 100 --no-pager
 sudo journalctl -u php8.3-fpm -n 100 --no-pager
 sudo journalctl -u smst-laravel-queue -n 100 --no-pager
 ```
