@@ -16,6 +16,8 @@ class MisiSekolahsTable
             ->columns([
                 TextColumn::make('isi')
                     ->label('Misi Sekolah')
+                    ->limit(100)
+                    ->tooltip(fn(?string $state): ?string => $state)
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('created_at')

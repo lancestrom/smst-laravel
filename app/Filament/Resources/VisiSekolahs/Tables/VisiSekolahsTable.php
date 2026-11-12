@@ -16,6 +16,8 @@ class VisiSekolahsTable
             ->columns([
                 TextColumn::make('isi')
                     ->label('Visi Sekolah')
+                    ->limit(100)
+                    ->tooltip(fn (?string $state): ?string => $state)
                     ->searchable()
                     ->sortable(),
             ])
