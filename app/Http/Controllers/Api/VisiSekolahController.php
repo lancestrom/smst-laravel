@@ -1,22 +1,23 @@
 <?php
 
-namespace App\Http\Controllers\Api\v1;
+namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\ProfilSekolahResource;
-use App\Models\ProfilSekolah;
+use App\Http\Resources\VisiSekolahResource;
+use App\Models\VisiSekolah;
 use Illuminate\Http\Request;
 
-class ProfilSekolahController extends Controller
+
+class VisiSekolahController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-          $data = ProfilSekolah::latest()->get();
-
-        return ProfilSekolahResource::collection($data);
+     return VisiSekolahResource::collection(
+            VisiSekolah::latest()->get()
+        );
     }
 
     /**
@@ -32,9 +33,9 @@ class ProfilSekolahController extends Controller
      */
     public function show(string $id)
     {
-        $profilSekolah = ProfilSekolah::findOrFail($id);
+        $visiSekolah = VisiSekolah::findOrFail($id);
 
-        return new ProfilSekolahResource($profilSekolah);
+        return new VisiSekolahResource($visiSekolah);
     }
 
     /**
