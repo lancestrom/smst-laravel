@@ -2,11 +2,11 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Api\ProfilSekolahController;
+use App\Http\Controllers\Api\v1\ProfilSekolahController;
+
 
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
-
 
 Route::apiResource('profil-sekolah', ProfilSekolahController::class);
