@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\ProfilSekolahController;
 use App\Http\Controllers\Api\VisiSekolahController;
 use App\Http\Controllers\Api\MisiSekolahController;
+use App\Http\Controllers\Api\JurusanController;
 
 // Route::get('/user', function (Request $request) {
 //     return $request->user();
@@ -13,3 +14,4 @@ use App\Http\Controllers\Api\MisiSekolahController;
 Route::apiResource('profil-sekolah', ProfilSekolahController::class);
 Route::apiResource('visi-sekolah', VisiSekolahController::class);
 Route::apiResource('misi-sekolah', MisiSekolahController::class);
+Route::apiResource('jurusans', JurusanController::class);
