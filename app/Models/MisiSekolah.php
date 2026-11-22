@@ -2,11 +2,12 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 
 class MisiSekolah extends Model
 {
-    // protected $table = 'misi_sekolahs';
+    use HasUuids;
 
     protected $fillable = [
         'isi',

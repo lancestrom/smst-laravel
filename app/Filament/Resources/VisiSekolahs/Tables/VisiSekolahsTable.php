@@ -14,10 +14,13 @@ class VisiSekolahsTable
     {
         return $table
             ->columns([
+                TextColumn::make('id')
+                    ->label('UUID')
+                    ->sortable(),
                 TextColumn::make('isi')
                     ->label('Visi Sekolah')
-                    ->limit(100)
-                    ->tooltip(fn (?string $state): ?string => $state)
+                    ->limit(70)
+                    ->tooltip(fn(?string $state): ?string => $state)
                     ->searchable()
                     ->sortable(),
             ])

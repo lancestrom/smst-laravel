@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('profil_sekolahs', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id')->primary();
             $table->string('nama_sekolah');
             $table->string('npsn', 20)->nullable();
             $table->text('alamat')->nullable();

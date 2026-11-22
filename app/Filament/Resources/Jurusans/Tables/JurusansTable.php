@@ -14,6 +14,9 @@ class JurusansTable
     {
         return $table
             ->columns([
+                TextColumn::make('id')
+                    ->label('UUID')
+                    ->sortable(),
                 TextColumn::make('kode')
                     ->searchable(),
                 TextColumn::make('nama')

@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('visi_sekolahs', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id')->primary();
             $table->text('isi');
             $table->timestamps();
         });

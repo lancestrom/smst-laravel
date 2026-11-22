@@ -24,6 +24,9 @@ class ProfilSekolahsTable
                     ->rounded()
                     ->square()
                     ->size(50),
+                TextColumn::make('id')
+                    ->label('UUID')
+                    ->sortable(),
                 TextColumn::make('nama_sekolah')
                     ->label('Nama Sekolah')
                     ->searchable()
@@ -36,14 +39,6 @@ class ProfilSekolahsTable
                 TextColumn::make('nama_kepala_sekolah')
                     ->label('Kepala Sekolah')
                     ->searchable(),
-
-                TextColumn::make('email')
-                    ->label('Email'),
-
-                TextColumn::make('updated_at')
-                    ->label('Terakhir Diperbarui')
-                    ->dateTime('d/m/Y H:i')
-                    ->sortable(),
             ])
             ->filters([
                 //

@@ -14,6 +14,9 @@ class VisiJurusansTable
     {
         return $table
             ->columns([
+                TextColumn::make('id')
+                    ->label('UUID')
+                    ->sortable(),
                 TextColumn::make('jurusan.nama')
                     ->label('Nama Jurusan')
                     ->searchable()

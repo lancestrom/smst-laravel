@@ -16,20 +16,15 @@ class MisiSekolahsTable
     {
         return $table
             ->columns([
+                TextColumn::make('id')
+                    ->label('UUID')
+                    ->sortable(),
                 TextColumn::make('isi')
                     ->label('Misi Sekolah')
-                    ->limit(100)
+                    ->limit(70)
                     ->tooltip(fn(?string $state): ?string => $state)
                     ->searchable()
                     ->sortable(),
-                TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 //
