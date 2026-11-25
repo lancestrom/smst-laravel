@@ -23,7 +23,7 @@ class VisiSekolahResource extends Resource
 
     protected static ?string $navigationLabel = 'Visi Sekolah';
 
-    protected static string|UnitEnum|null $navigationGroup = 'Pengaturan Website';
+    protected static string|UnitEnum|null $navigationGroup = 'Pengaturan Website Sekolah';
 
     protected static ?string $modelLabel = 'Visi Sekolah';
 

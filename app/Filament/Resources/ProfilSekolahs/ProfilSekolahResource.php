@@ -32,7 +32,7 @@ class ProfilSekolahResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Profil Sekolah';
 
-    protected static string|UnitEnum|null $navigationGroup = 'Pengaturan Website';
+    protected static string|UnitEnum|null $navigationGroup = 'Pengaturan Website Sekolah';
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 

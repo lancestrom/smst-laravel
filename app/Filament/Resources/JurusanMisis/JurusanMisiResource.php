@@ -23,7 +23,7 @@ class JurusanMisiResource extends Resource
 
     protected static ?string $navigationLabel = 'Jurusan Misi Sekolah';
 
-    protected static string|UnitEnum|null $navigationGroup = 'Pengaturan Website';
+    protected static string|UnitEnum|null $navigationGroup = 'Pengaturan Website Sekolah';
 
     protected static ?string $modelLabel = 'Jurusan Misi Sekolah';
 

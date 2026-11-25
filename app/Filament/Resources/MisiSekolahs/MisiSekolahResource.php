@@ -31,7 +31,7 @@ class MisiSekolahResource extends Resource
 
     protected static ?string $navigationLabel = 'Misi Sekolah';
 
-    protected static string|UnitEnum|null $navigationGroup = 'Pengaturan Website';
+    protected static string|UnitEnum|null $navigationGroup = 'Pengaturan Website Sekolah';
 
     protected static ?string $modelLabel = 'Misi Sekolah';
 
